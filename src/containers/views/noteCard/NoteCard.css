@@ -1,0 +1,18 @@
+.noteActions {
+  opacity: 0;
+  transition: opacity 600ms linear;
+  -o-transition: opacity 600ms linear;
+  -ms-transition: opacity 600ms linear;
+  -moz-transition: opacity 600ms linear;
+  -webkit-transition: opacity 600ms linear;
+}
+
+.noteContent:hover .noteActions,
+.noteActions:hover {
+  opacity: 1;
+  transition: opacity 300ms linear;
+  -o-transition: opacity 300ms linear;
+  -ms-transition: opacity 300ms linear;
+  -moz-transition: opacity 300ms linear;
+  -webkit-transition: opacity 300ms linear;
+}
