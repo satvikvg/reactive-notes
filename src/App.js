@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import autoBind from "react-autobind";
+import PropTypes from "prop-types";
 import _ from "lodash";
 import firebase from "firebase";
 import { CONFIG } from "./config/config";
@@ -17,9 +18,19 @@ import * as ReactAnimationData from "./media/lottie/react_logo.json";
 import * as fingerPrintScanAnimationData from "./media/lottie/fingerPrintScan.json";
 import * as fingerPrintSuccessAnimationData from "./media/lottie/fingerprintSuccess.json";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import AppDrawer from "./containers/views/drawers/AppDrawer";
+import { withStyles } from "@material-ui/core";
+import { loadCSS } from "fg-loadcss/src/loadCSS";
 
 const SIGN_UP_EVENT = "sign-up";
 const SIGN_IN_EVENT = "sign-in";
+
+const styles = theme => ({
+  root: {
+    display: "flex",
+    height: "-webkit-fill-available"
+  }
+});
 
 class App extends Component {
   constructor(props) {
@@ -94,6 +105,13 @@ class App extends Component {
    */
   componentWillMount() {
     firebase.auth().onAuthStateChanged(this.handleOnAuthStateChanged);
+  }
+
+  componentDidMount() {
+    loadCSS(
+      "https://use.fontawesome.com/releases/v5.5.0/css/all.css",
+      document.querySelector("#insertion-point-jss")
+    );
   }
 
   render() {
@@ -461,11 +479,14 @@ class App extends Component {
    * Responsible for rendering Home page when requested.
    */
   renderHomePage() {
+    const { classes } = this.props;
+
     return (
-      <Fragment>
+      <div className={classes.root}>
         <Header />
+        <AppDrawer />
         <Container />
-      </Fragment>
+      </div>
     );
   }
 
@@ -559,6 +580,10 @@ class App extends Component {
   }
 }
 
+App.propTypes = {
+  classes: PropTypes.object.isRequired
+};
+
 // which props do we want to inject, given the global store state?
 function mapStateToProps(state) {
   return {
@@ -568,4 +593,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps)(withStyles(styles)(App));

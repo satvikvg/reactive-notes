@@ -9,6 +9,18 @@ class NotesService {
     this.notesRef.on(eventType, callback);
   }
 
+  getStarredNotes(eventType, callback) {
+    this.notesRef.equalTo(true, "starred").on(eventType, callback);
+  }
+
+  getArchivedNotes(eventType, callback) {
+    this.notesRef.equalTo(true, "archived").on(eventType, callback);
+  }
+
+  getTrashedNotes(eventType, callback) {
+    this.notesRef.equalTo(true, "trashed").on(eventType, callback);
+  }
+
   async getNote(id, callback) {
     this.notesRef.child(id).once("value", callback);
   }
@@ -19,6 +31,10 @@ class NotesService {
 
   deleteNote(id) {
     this.notesRef.child(id).remove();
+  }
+
+  setStarred(id) {
+    this.notesRef.child(id);
   }
 }
 

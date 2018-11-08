@@ -1,5 +1,7 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
+import { connect } from "react-redux";
 import firebase from "firebase";
+import classNames from "classnames";
 import {
   withStyles,
   AppBar,
@@ -12,6 +14,8 @@ import {
   Input
 } from "@material-ui/core";
 import { fade } from "@material-ui/core/styles/colorManipulator";
+import * as appActions from "../../../store/app/actions";
+import * as appSelector from "../../../store/app/reducer";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -19,16 +23,35 @@ import MailIcon from "@material-ui/icons/Mail";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
 
+const drawerWidth = 240;
+
 const styles = theme => ({
-  root: {
-    width: "100%"
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    })
+  },
+  appBarShift: {
+    [theme.breakpoints.up("md")]: {
+      marginLeft: drawerWidth,
+      width: `calc(100% - ${drawerWidth}px)`,
+      transition: theme.transitions.create(["width", "margin"], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen
+      })
+    }
+  },
+  menuButton: {
+    marginLeft: 12,
+    marginRight: 36
+  },
+  hide: {
+    display: "none"
   },
   grow: {
     flexGrow: 1
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20
   },
   title: {
     display: "none",
@@ -112,13 +135,19 @@ class MainActionBar extends Component {
     this.setState({ mobileMoreAnchorEl: null });
   };
 
+  handleDrawerToggle = () => {
+    this.props.mainDrawer.open
+      ? this.props.dispatch(appActions.closeMainDrawer())
+      : this.props.dispatch(appActions.openMainDrawer());
+  };
+
   handleSignOut() {
     firebase.auth().signOut();
   }
 
   render() {
     const { anchorEl, mobileMoreAnchorEl } = this.state;
-    const { classes } = this.props;
+    const { classes, mainDrawer } = this.props;
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -176,13 +205,21 @@ class MainActionBar extends Component {
     );
 
     return (
-      <div className={classes.root}>
-        <AppBar position="static">
-          <Toolbar>
+      <Fragment>
+        <AppBar
+          position="fixed"
+          className={classNames(classes.appBar, {
+            [classes.appBarShift]: mainDrawer.open
+          })}
+        >
+          <Toolbar disableGutters={!mainDrawer.open}>
             <IconButton
-              className={classes.menuButton}
               color="inherit"
               aria-label="Open drawer"
+              onClick={this.handleDrawerToggle}
+              className={classNames(classes.menuButton, {
+                [classes.hide]: mainDrawer.open
+              })}
             >
               <MenuIcon />
             </IconButton>
@@ -249,9 +286,18 @@ class MainActionBar extends Component {
         </AppBar>
         {renderMenu}
         {renderMobileMenu}
-      </div>
+      </Fragment>
     );
   }
 }
 
-export default withStyles(styles)(MainActionBar);
+// which props do we want to inject, given the global store state?
+function mapStateToProps(state) {
+  return {
+    mainDrawer: {
+      open: appSelector.isMainDrawerOpen(state)
+    }
+  };
+}
+
+export default connect(mapStateToProps)(withStyles(styles)(MainActionBar));

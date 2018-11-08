@@ -1,5 +1,20 @@
 import React, { Component } from "react";
-import Home from "../../pages/home/Home";
+import { withStyles } from "@material-ui/core";
+import NotesContainer from "../../../containers/notes/NotesContainer";
+
+const styles = theme => ({
+  toolbar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    padding: "0 8px",
+    ...theme.mixins.toolbar
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing.unit * 2
+  }
+});
 
 class Container extends Component {
   constructor(props) {
@@ -8,12 +23,14 @@ class Container extends Component {
   }
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className="container">
-        <Home />
-      </div>
+      <main className={classes.content}>
+        <div className={classes.toolbar} />
+        <NotesContainer style={{ backgroundColor: "#e8e8e8" }} />
+      </main>
     );
   }
 }
 
-export default Container;
+export default withStyles(styles)(Container);

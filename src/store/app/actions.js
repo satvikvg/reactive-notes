@@ -41,3 +41,29 @@ export function navigateHome(user) {
     }
   };
 }
+
+export function openMainDrawer() {
+  const mainDrawer = {
+    open: true
+  };
+  return (dispatch, getState) => {
+    try {
+      dispatch({ type: types.MAIN_DRAWER_OPEN, mainDrawer });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+}
+
+export function closeMainDrawer() {
+  const mainDrawer = {
+    open: false
+  };
+  return (dispatch, getState) => {
+    try {
+      dispatch({ type: types.MAIN_DRAWER_CLOSE, mainDrawer });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+}
