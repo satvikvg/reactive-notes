@@ -29,9 +29,7 @@ class NotesContainer extends Component {
   }
 
   componentDidMount() {
-    this.notesService.getNotes("value", snapshot => {
-      this.props.dispatch(notesActions.notesFetched(snapshot));
-    });
+    this.notesService.getNotes("value", this.onNotesReceived);
   }
 
   render() {
@@ -51,6 +49,10 @@ class NotesContainer extends Component {
     );
   }
 
+  componentWillUnmount() {
+    this.notesService.detachAllCallbacks();
+  }
+
   renderLoading() {
     return <p>Loading...</p>;
   }
@@ -67,6 +69,10 @@ class NotesContainer extends Component {
 
   openNewNoteDialog() {
     this.props.dispatch(dialogActions.openNoteDialog());
+  }
+
+  onNotesReceived(snapshot) {
+    this.props.dispatch(notesActions.notesFetched(snapshot));
   }
 }
 

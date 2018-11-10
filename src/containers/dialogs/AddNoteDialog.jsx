@@ -183,7 +183,14 @@ function mapStateToProps(state) {
   if (dialogSelectors.getNoteAssociatedToDialog(state)) {
     note = dialogSelectors.getNoteAssociatedToDialog(state);
   } else {
-    note = { type: "TEXT", title: undefined, content: undefined };
+    note = {
+      type: "TEXT",
+      title: undefined,
+      content: undefined,
+      starred: false,
+      archived: false,
+      trashed: false
+    };
   }
 
   return {

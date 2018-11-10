@@ -9,8 +9,7 @@ import {
   ListItem,
   ListItemText,
   Icon,
-  SwipeableDrawer,
-  Typography
+  SwipeableDrawer
 } from "@material-ui/core";
 import classNames from "classnames";
 import PropTypes from "prop-types";
@@ -160,6 +159,9 @@ class AppDrawer extends Component {
 
         case "Divider":
           items.push(<Divider />);
+          break;
+
+        default:
           break;
       }
     });
