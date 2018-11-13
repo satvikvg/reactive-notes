@@ -1,4 +1,5 @@
 import * as notesActionTypes from "../store/notes/actionTypes";
+import * as dialogActionTypes from "../store/dialogs/actionTypes";
 export const menuItems = [
   {
     name: "Notes",
@@ -33,12 +34,12 @@ export const menuItems = [
     name: "Settings",
     icon: "fas fa-cog",
     type: "MenuItem",
-    action: undefined
+    action: dialogActionTypes.TOGGLE_SETTINGS_DIALOG
   },
   {
     name: "About",
     icon: "fas fa-info",
     type: "MenuItem",
-    action: undefined
+    action: dialogActionTypes.TOGGLE_ABOUT_DIALOG
   }
 ];

@@ -5,6 +5,13 @@ const initialState = Immutable({
   newNoteDialog: {
     isOpen: false,
     note: undefined
+  },
+  settingsDialogProps: {
+    open: false,
+    onClose: null
+  },
+  aboutDialogProps: {
+    open: false
   }
 });
 
@@ -33,6 +40,12 @@ export default function reduce(state = initialState, action = {}) {
     case types.CLOSE_NEW_NOTE_DIALOG:
       return state.merge(action);
 
+    case types.TOGGLE_SETTINGS_DIALOG:
+      return state.merge(action);
+
+    case types.TOGGLE_ABOUT_DIALOG:
+      return state.merge(action);
+
     default:
       return state;
   }
@@ -45,4 +58,12 @@ export function getIsNewNoteDialogIsOpen(state) {
 
 export function getNoteAssociatedToDialog(state) {
   return state.dialogs.newNoteDialog.note;
+}
+
+export function getSettingsDialogProps(state) {
+  return state.dialogs.settingsDialogProps;
+}
+
+export function getAboutDialogProps(state) {
+  return state.dialogs.aboutDialogProps;
 }

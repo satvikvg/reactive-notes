@@ -42,3 +42,25 @@ export function closeNewNoteDialog() {
     }
   };
 }
+
+export function toggleSettingsDialog(settingsDialogProps) {
+  return (dispatch, getState) => {
+    try {
+      settingsDialogProps.open = settingsDialogProps.open ? false : true;
+      dispatch({ type: types.TOGGLE_SETTINGS_DIALOG, settingsDialogProps });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+}
+
+export function toggleAboutDialog(aboutDialogProps) {
+  return (dispatch, getState) => {
+    try {
+      aboutDialogProps.open = aboutDialogProps.open ? false : true;
+      dispatch({ type: types.TOGGLE_ABOUT_DIALOG, aboutDialogProps });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+}

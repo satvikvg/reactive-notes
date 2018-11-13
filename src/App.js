@@ -21,6 +21,8 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import AppDrawer from "./containers/views/drawers/AppDrawer";
 import { withStyles, Snackbar } from "@material-ui/core";
 import { loadCSS } from "fg-loadcss/src/loadCSS";
+import SettingsDialog from "./containers/dialogs/SettingsDialog";
+import AboutDialog from "./containers/dialogs/AboutDialog";
 
 const SIGN_UP_EVENT = "sign-up";
 const SIGN_IN_EVENT = "sign-in";
@@ -481,6 +483,8 @@ class App extends Component {
         <Header />
         <AppDrawer />
         <Container />
+        <SettingsDialog />
+        <AboutDialog />
         {this.renderSnackbar()}
       </div>
     );

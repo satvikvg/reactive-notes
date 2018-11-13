@@ -132,11 +132,11 @@ class AddNoteDialog extends Component {
   handleAdd(noteToAdd) {
     const note = { ...this.props.note };
 
-    if (noteToAdd.title != undefined) {
+    if (noteToAdd.title !== undefined) {
       note.title = noteToAdd.title;
     }
 
-    if (noteToAdd.content != undefined) {
+    if (noteToAdd.content !== undefined) {
       note.content = noteToAdd.content;
     }
 

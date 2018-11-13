@@ -21,6 +21,8 @@ import { menuItems } from "../../../config/menuConfig";
 import NotesService from "../../../services/NotesService";
 import * as notesActionTypes from "../../../store/notes/actionTypes";
 import * as notesActions from "../../../store/notes/actions";
+import * as dialogActionTypes from "../../../store/dialogs/actionTypes";
+import * as dialogActions from "../../../store/dialogs/actions";
 
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -191,28 +193,40 @@ class AppDrawer extends Component {
       case notesActionTypes.GET_NOTES:
         this.notesService.detachCallback("value", this.onNotesReceived);
         this.notesService.getNotes("value", this.onNotesReceived);
+        this.setSelectedAction(action);
         break;
 
       case notesActionTypes.GET_STARRED_NOTES:
         this.notesService.detachCallback("value", this.onNotesReceived);
         this.notesService.getStarredNotes("value", this.onNotesReceived);
+        this.setSelectedAction(action);
         break;
 
       case notesActionTypes.GET_ARCHIVED_NOTES:
         this.notesService.detachCallback("value", this.onNotesReceived);
         this.notesService.getArchivedNotes("value", this.onNotesReceived);
+        this.setSelectedAction(action);
         break;
 
       case notesActionTypes.GET_TRASHED_NOTES:
         this.notesService.detachCallback("value", this.onNotesReceived);
         this.notesService.getTrashedNotes("value", this.onNotesReceived);
+        this.setSelectedAction(action);
+        break;
+
+      case dialogActionTypes.TOGGLE_SETTINGS_DIALOG:
+        this.props.dispatch(
+          dialogActions.toggleSettingsDialog({ open: false })
+        );
+        break;
+
+      case dialogActionTypes.TOGGLE_ABOUT_DIALOG:
+        this.props.dispatch(dialogActions.toggleAboutDialog({ open: false }));
         break;
 
       default:
         break;
     }
-
-    this.setSelectedAction(action);
   }
 
   setSelectedAction(action) {
