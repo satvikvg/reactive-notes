@@ -65,18 +65,12 @@ class SettingsDialog extends React.Component {
             </Button>
           </Toolbar>
         </AppBar>
-        <List>
-          <ListItem button>
-            <ListItemText primary="Phone ringtone" secondary="Titania" />
-          </ListItem>
-          <Divider />
-          <ListItem button>
-            <ListItemText
-              primary="Default notification ringtone"
-              secondary="Tethys"
-            />
-          </ListItem>
-        </List>
+        <Typography variant="display1" align="center">
+          <br />
+          <br />
+          <br />
+          This feature is currently under developement.
+        </Typography>
       </Dialog>
     );
   }
