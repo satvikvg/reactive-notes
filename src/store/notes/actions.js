@@ -1,9 +1,4 @@
 import * as types from "./actionTypes";
-import NotesService from "../../services/NotesService";
-
-export function getNotes(eventType, callback) {
-  NotesService.getNotes(eventType, callback);
-}
 
 export function notesFetched(snapshot) {
   return async (dispatch, getState) => {
@@ -13,8 +8,11 @@ export function notesFetched(snapshot) {
         snapshot.forEach(childSnapshot => {
           const note = {
             id: childSnapshot.key,
+            type: childSnapshot.val().type,
             title: childSnapshot.val().title,
-            content: childSnapshot.val().content
+            content: childSnapshot.val().content,
+            starred: childSnapshot.val().starred,
+            state: childSnapshot.val().state
           };
 
           notes.push(note);

@@ -1,13 +1,13 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import autoBind from "react-autobind";
+import FirebaseService from "./services/FirebaseService";
 import PropTypes from "prop-types";
 import _ from "lodash";
-import firebase from "firebase";
-import { CONFIG } from "./config/config";
 import * as appActionTypes from "./store/app/actionTypes";
 import * as appActions from "./store/app/actions";
 import * as appSelector from "./store/app/reducer";
+import * as snackbarSelector from "./store/snackbars/reducer";
 import Lottie from "react-lottie";
 import "./App.css";
 import Header from "./components/core/header/Header";
@@ -19,7 +19,7 @@ import * as fingerPrintScanAnimationData from "./media/lottie/fingerPrintScan.js
 import * as fingerPrintSuccessAnimationData from "./media/lottie/fingerprintSuccess.json";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import AppDrawer from "./containers/views/drawers/AppDrawer";
-import { withStyles } from "@material-ui/core";
+import { withStyles, Snackbar } from "@material-ui/core";
 import { loadCSS } from "fg-loadcss/src/loadCSS";
 
 const SIGN_UP_EVENT = "sign-up";
@@ -92,9 +92,6 @@ class App extends Component {
       }
     };
 
-    // Initialize firebase
-    firebase.initializeApp(CONFIG);
-
     // Automatically bind all functions with "this" context.
     autoBind(this);
   }
@@ -104,7 +101,7 @@ class App extends Component {
    * We will handle all authentication state change linteners here.
    */
   componentWillMount() {
-    firebase.auth().onAuthStateChanged(this.handleOnAuthStateChanged);
+    FirebaseService.auth().onAuthStateChanged(this.handleOnAuthStateChanged);
   }
 
   componentDidMount() {
@@ -247,8 +244,7 @@ class App extends Component {
     // Show linear progress.
     this.setLinearProgress(true);
 
-    firebase
-      .auth()
+    FirebaseService.auth()
       .createUserWithEmailAndPassword(creds.email, creds.password)
       .catch(this.handleSignInOrSignUpErrors);
   }
@@ -317,8 +313,7 @@ class App extends Component {
     this.animateSignIn(true);
 
     // Sign in user using creds provided in the form.
-    firebase
-      .auth()
+    FirebaseService.auth()
       .signInWithEmailAndPassword(creds.email, creds.password)
       .then(value => {
         // Check if sign in is successfull
@@ -369,7 +364,7 @@ class App extends Component {
       console.log("User: " + user.email + " is logged in");
 
       // Iniatialize notes DB instance.
-      this.notesDb = firebase.database().ref("notes/" + user.uid);
+      this.notesDb = FirebaseService.database().ref("notes/" + user.uid);
 
       if (this.state.event === SIGN_UP_EVENT) {
         let promises = [];
@@ -486,7 +481,24 @@ class App extends Component {
         <Header />
         <AppDrawer />
         <Container />
+        {this.renderSnackbar()}
       </div>
+    );
+  }
+
+  renderSnackbar() {
+    const { config } = this.props.snackbar;
+
+    return (
+      <Snackbar
+        anchorOrigin={config.anchorOrigin}
+        open={config.open}
+        autoHideDuration={config.autoHideDuration}
+        onClose={config.onClose}
+        ContentProps={config.ContentProps}
+        message={config.message}
+        action={config.action}
+      />
     );
   }
 
@@ -589,6 +601,9 @@ function mapStateToProps(state) {
   return {
     pages: {
       render: appSelector.getPageToRender(state)
+    },
+    snackbar: {
+      config: snackbarSelector.getConfiguration(state)
     }
   };
 }

@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import autoBind from "react-autobind";
+import FirebaseService from "../../../services/FirebaseService";
 import {
   Drawer,
   IconButton,
@@ -17,6 +18,9 @@ import { withStyles } from "@material-ui/core";
 import * as appActions from "../../../store/app/actions";
 import * as appSelector from "../../../store/app/reducer";
 import { menuItems } from "../../../config/menuConfig";
+import NotesService from "../../../services/NotesService";
+import * as notesActionTypes from "../../../store/notes/actionTypes";
+import * as notesActions from "../../../store/notes/actions";
 
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -74,7 +78,14 @@ const styles = theme => ({
 class AppDrawer extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      menuItem: {
+        selectedAction: notesActionTypes.GET_NOTES
+      }
+    };
+    const user = FirebaseService.auth().currentUser;
+    this.db = FirebaseService.database();
+    this.notesService = new NotesService(this.db, user);
     autoBind(this);
   }
 
@@ -145,12 +156,18 @@ class AppDrawer extends Component {
   getMenuItems() {
     const items = [];
     const { classes } = this.props;
+    const { selectedAction } = this.state.menuItem;
 
     menuItems.forEach(item => {
       switch (item.type) {
         case "MenuItem":
           items.push(
-            <ListItem button key={item.name}>
+            <ListItem
+              button
+              key={item.name}
+              onClick={() => this.handleMenuItemClick(item.action)}
+              selected={selectedAction === item.action ? true : false}
+            >
               <Icon className={classNames(classes.icon, item.icon)} />
               <ListItemText primary={item.name} />
             </ListItem>
@@ -158,7 +175,7 @@ class AppDrawer extends Component {
           break;
 
         case "Divider":
-          items.push(<Divider />);
+          items.push(<Divider key={items.length} />);
           break;
 
         default:
@@ -167,6 +184,46 @@ class AppDrawer extends Component {
     });
 
     return items;
+  }
+
+  handleMenuItemClick(action) {
+    switch (action) {
+      case notesActionTypes.GET_NOTES:
+        this.notesService.detachCallback("value", this.onNotesReceived);
+        this.notesService.getNotes("value", this.onNotesReceived);
+        break;
+
+      case notesActionTypes.GET_STARRED_NOTES:
+        this.notesService.detachCallback("value", this.onNotesReceived);
+        this.notesService.getStarredNotes("value", this.onNotesReceived);
+        break;
+
+      case notesActionTypes.GET_ARCHIVED_NOTES:
+        this.notesService.detachCallback("value", this.onNotesReceived);
+        this.notesService.getArchivedNotes("value", this.onNotesReceived);
+        break;
+
+      case notesActionTypes.GET_TRASHED_NOTES:
+        this.notesService.detachCallback("value", this.onNotesReceived);
+        this.notesService.getTrashedNotes("value", this.onNotesReceived);
+        break;
+
+      default:
+        break;
+    }
+
+    this.setSelectedAction(action);
+  }
+
+  setSelectedAction(action) {
+    const menuItem = { ...this.state.menuItem };
+    menuItem.selectedAction = action;
+
+    this.setState({ menuItem });
+  }
+
+  onNotesReceived(snapshot) {
+    this.props.dispatch(notesActions.notesFetched(snapshot));
   }
 }
 

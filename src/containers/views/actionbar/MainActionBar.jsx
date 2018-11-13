@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
-import firebase from "firebase";
+import FirebaseService from "../../../services/FirebaseService";
 import classNames from "classnames";
 import {
   withStyles,
@@ -142,7 +142,7 @@ class MainActionBar extends Component {
   };
 
   handleSignOut() {
-    firebase.auth().signOut();
+    FirebaseService.auth().signOut();
   }
 
   render() {

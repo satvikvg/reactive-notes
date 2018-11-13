@@ -19,7 +19,7 @@ export const menuItems = [
     action: notesActionTypes.GET_ARCHIVED_NOTES
   },
   {
-    name: "Bin",
+    name: "Trash",
     icon: "far fa-trash-alt",
     type: "MenuItem",
     action: notesActionTypes.GET_TRASHED_NOTES

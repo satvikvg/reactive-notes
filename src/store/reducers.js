@@ -1,6 +1,6 @@
 import app from "./app/reducer";
-import notes from "./notes/reducer";
 import dialogs from "./dialogs/reducer";
-import cards from "./cards/reducer";
+import notes from "./notes/reducer";
+import snackbars from "./snackbars/reducer";
 
-export { app, notes, dialogs, cards };
+export { app, dialogs, notes, snackbars };

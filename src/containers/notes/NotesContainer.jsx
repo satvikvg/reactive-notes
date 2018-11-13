@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import autoBind from "react-autobind";
-import firebase from "firebase";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import { withStyles } from "@material-ui/core";
@@ -12,6 +11,7 @@ import * as notesSelector from "../../store/notes/reducer";
 import * as dialogActions from "../../store/dialogs/actions";
 import AddNoteDialog from "../dialogs/AddNoteDialog";
 import NotesService from "../../services/NotesService";
+import FirebaseService from "../../services/FirebaseService";
 
 const styles = theme => ({
   root: {
@@ -22,10 +22,10 @@ const styles = theme => ({
 class NotesContainer extends Component {
   constructor(props) {
     super(props);
-    const user = firebase.auth().currentUser;
-    this.db = firebase.database();
-    this.notesService = new NotesService(this.db, user);
     autoBind(this);
+    const user = FirebaseService.auth().currentUser;
+    this.db = FirebaseService.database();
+    this.notesService = new NotesService(this.db, user);
   }
 
   componentDidMount() {

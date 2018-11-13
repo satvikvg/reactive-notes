@@ -1,3 +1,5 @@
+import { NoteStates } from "../constants/NoteConstants";
+
 class NotesService {
   constructor(db, user) {
     this.db = db;
@@ -7,10 +9,8 @@ class NotesService {
 
   getNotes(eventType, callback) {
     this.notesRef
-      .orderByChild("archived")
-      .equalTo(false)
-      .orderByChild("trashed")
-      .equalTo(false)
+      .orderByChild("state")
+      .equalTo(NoteStates.DEFAULT)
       .on(eventType, callback);
   }
 
@@ -18,51 +18,79 @@ class NotesService {
     this.notesRef
       .orderByChild("starred")
       .equalTo(true)
-      .orderByChild("archived")
-      .equalTo(false)
-      .orderByChild("trashed")
-      .equalTo(false)
       .on(eventType, callback);
   }
 
   getArchivedNotes(eventType, callback) {
     this.notesRef
-      .orderByChild("archived")
-      .equalTo(true)
-      .orderByChild("trashed")
-      .equalTo(false)
+      .orderByChild("state")
+      .equalTo(NoteStates.ARCHIVED)
       .on(eventType, callback);
   }
 
   getTrashedNotes(eventType, callback) {
     this.notesRef
-      .orderByChild("trashed")
-      .equalTo(true)
+      .orderByChild("state")
+      .equalTo(NoteStates.TRASHED)
       .on(eventType, callback);
   }
 
-  async getNote(id, callback) {
-    this.notesRef.child(id).once("value", callback);
+  getNote(id, callback) {
+    this.notesRef.child(id).once("value", snapshot => {
+      if (snapshot.exists) {
+        const note = {
+          id: snapshot.key,
+          type: snapshot.val().type,
+          title: snapshot.val().title,
+          content: snapshot.val().content,
+          starred: snapshot.val().starred,
+          state: snapshot.val().state
+        };
+        callback(note);
+      } else {
+        callback(null);
+      }
+    });
   }
 
   addNote(note) {
     this.notesRef.push(note);
   }
 
-  deleteNote(id) {
-    this.notesRef.child(id).remove();
+  deleteNote(id, onComplete) {
+    this.notesRef.child(id).remove(onComplete);
   }
 
-  setStarred(id, isStarred) {
-    this.notesRef.child(id).update({ starred: isStarred });
+  toggleStarred(note, onComplete) {
+    if (note.starred) {
+      this.notesRef.child(note.id).update({ starred: false }, onComplete);
+    } else {
+      this.notesRef.child(note.id).update({ starred: true }, onComplete);
+    }
   }
 
-  setArchived(id, isArchived) {
-    this.notesRef.child(id).update({ archived: isArchived });
+  toggleArchived(note, onComplete) {
+    if (note.state === NoteStates.ARCHIVED) {
+      this.notesRef
+        .child(note.id)
+        .update({ state: NoteStates.DEFAULT }, onComplete);
+    } else {
+      this.notesRef
+        .child(note.id)
+        .update({ state: NoteStates.ARCHIVED }, onComplete);
+    }
   }
 
-  setTrashed(id, isTrashed) {
-    this.notesRef.child(id).update({ trashed: isTrashed });
+  toggleTrashed(note, onComplete) {
+    if (note.state === NoteStates.TRASHED) {
+      this.notesRef
+        .child(note.id)
+        .update({ state: NoteStates.DEFAULT }, onComplete);
+    } else {
+      this.notesRef
+        .child(note.id)
+        .update({ state: NoteStates.TRASHED }, onComplete);
+    }
   }
 
   detachCallback(eventType, callback) {

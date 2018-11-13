@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import autoBind from "react-autobind";
-import firebase from "firebase";
 import {
   Dialog,
   DialogContent,
@@ -9,11 +8,13 @@ import {
   DialogActions,
   Button,
   DialogTitle,
-  withStyles,
-  Snackbar
+  withStyles
 } from "@material-ui/core";
 import * as dialogActions from "../../store/dialogs/actions";
 import * as dialogSelectors from "../../store/dialogs/reducer";
+import * as snackbarActions from "../../store/snackbars/actions";
+import { NoteTypes, NoteStates } from "../../constants/NoteConstants";
+import FirebaseService from "../../services/FirebaseService";
 
 const styles = theme => ({
   title: {
@@ -26,6 +27,7 @@ const DIALOG_ELEMENT = "addNoteDialog.DIALOG_ELEMENT";
 class AddNoteDialog extends Component {
   constructor(props) {
     super(props);
+    autoBind(this);
     this.state = {
       // Defines which element to render [Default: Dialog].
       renderElement: DIALOG_ELEMENT,
@@ -36,18 +38,22 @@ class AddNoteDialog extends Component {
         message: "Saved"
       }
     };
-    const user = firebase.auth().currentUser;
-    this.db = firebase.database().ref("notes/" + user.uid);
-    autoBind(this);
+    const user = FirebaseService.auth().currentUser;
+    this.db = FirebaseService.database().ref("notes/" + user.uid);
+    this.snackbarProps = {
+      anchorOrigin: { vertical: "bottom", horizontal: "center" },
+      autoHideDuration: 4000,
+      onClose: this.handleSnackbarClose,
+      open: false,
+      ContentProps: {
+        "aria-describedby": "message-id"
+      },
+      message: null
+    };
   }
 
   render() {
-    return (
-      <Fragment>
-        {this.renderDialog()}
-        {this.renderSnackbar()}
-      </Fragment>
-    );
+    return <Fragment>{this.renderDialog()}</Fragment>;
   }
 
   renderDialog() {
@@ -103,22 +109,6 @@ class AddNoteDialog extends Component {
     );
   }
 
-  renderSnackbar() {
-    return (
-      <Snackbar
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        open={this.state.snackbarProps.open}
-        onClose={this.handleClose}
-        ContentProps={{
-          "aria-describedby": "message-id"
-        }}
-        message={
-          <span id="message-id">{this.state.snackbarProps.message}</span>
-        }
-      />
-    );
-  }
-
   handleInputChange(event) {
     let note;
     switch (event.target.id) {
@@ -139,11 +129,15 @@ class AddNoteDialog extends Component {
     }
   }
 
-  handleAdd(note) {
-    if (this.props.note.id) {
-      note.id = this.props.note.id;
-    } else {
-      note.id = null;
+  handleAdd(noteToAdd) {
+    const note = { ...this.props.note };
+
+    if (noteToAdd.title != undefined) {
+      note.title = noteToAdd.title;
+    }
+
+    if (noteToAdd.content != undefined) {
+      note.content = noteToAdd.content;
     }
 
     this.handleClose();
@@ -162,16 +156,19 @@ class AddNoteDialog extends Component {
     this.props.dispatch(dialogActions.closeNewNoteDialog());
   }
 
-  setSnackbar(open, message = "Saved") {
-    const snackbarProps = { ...this.state.snackbarProps };
-    snackbarProps.open = open;
-    snackbarProps.message = message;
-    this.setState({ snackbarProps });
+  handleSnackbarClose(event, reason) {
+    if (reason === "clickaway") {
+      return;
+    }
 
-    setTimeout(() => {
-      snackbarProps.open = false;
-      this.setState({ snackbarProps });
-    }, 4000);
+    this.props.dispatch(snackbarActions.hideSnackbar());
+  }
+
+  setSnackbar(open, message = "Saved") {
+    this.snackbarProps.open = open;
+    this.snackbarProps.message = message;
+
+    this.props.dispatch(snackbarActions.showSnackbar(this.snackbarProps));
   }
 }
 
@@ -184,12 +181,12 @@ function mapStateToProps(state) {
     note = dialogSelectors.getNoteAssociatedToDialog(state);
   } else {
     note = {
-      type: "TEXT",
+      id: null,
+      type: NoteTypes.TEXT,
       title: undefined,
       content: undefined,
       starred: false,
-      archived: false,
-      trashed: false
+      state: NoteStates.DEFAULT
     };
   }
 

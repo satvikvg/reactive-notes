@@ -2,26 +2,29 @@ import * as types from "./actionTypes";
 import Immutable from "seamless-immutable";
 
 const initialState = Immutable({
-  noteCard: {
-    action: undefined,
-    noteId: undefined
+  configuration: {
+    action: null,
+    anchorOrigin: { vertical: "bottom", horizontal: "center" },
+    autoHideDuration: null,
+    ContentProps: null,
+    message: null,
+    onClose: null,
+    open: false
   }
 });
 
 export default function reduce(state = initialState, action = {}) {
   switch (action.type) {
-    case types.NOTE_CARD_EDIT:
+    case types.SHOW_SNACKBAR:
       return state.merge(action);
-
-    case types.NOTE_CARD_DELETE:
+    case types.HIDE_SNACKBAR:
       return state.merge(action);
-
     default:
       return state;
   }
 }
 
 // Selectors -----
-export function getNoteCard(state) {
-  return state.cards.noteCard;
+export function getConfiguration(state) {
+  return state.snackbars.configuration;
 }
