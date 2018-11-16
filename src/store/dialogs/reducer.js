@@ -8,7 +8,9 @@ const initialState = Immutable({
   },
   settingsDialogProps: {
     open: false,
-    onClose: null
+    onClose: null,
+    themeSelectedName: "Blue | Pink",
+    themeSelected: "bluePink"
   },
   aboutDialogProps: {
     open: false

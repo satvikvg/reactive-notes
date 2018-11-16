@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import autoBind from "react-autobind";
+import PropTypes from "prop-types";
+import _ from "lodash";
 import {
   Dialog,
   DialogTitle,
@@ -10,6 +12,7 @@ import {
   DialogActions,
   Button
 } from "@material-ui/core";
+import { themes } from "../../config/themeConfig";
 
 class ThemeChooserDialog extends Component {
   constructor(props) {
@@ -19,6 +22,13 @@ class ThemeChooserDialog extends Component {
     this.state = {
       themeSelected: props.themeSelected
     };
+
+    this.themesList = [];
+
+    for (var key in themes) {
+      const theme = { name: themes[key].name, id: key };
+      this.themesList.push(theme);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -50,14 +60,16 @@ class ThemeChooserDialog extends Component {
             value={this.state.themeSelected}
             onChange={this.handleChange}
           >
-            {options.map(option => (
-              <FormControlLabel
-                value={option}
-                key={option}
-                control={<Radio />}
-                label={option}
-              />
-            ))}
+            {this.themesList.map(theme => {
+              return (
+                <FormControlLabel
+                  value={theme.id}
+                  key={theme.id}
+                  control={<Radio />}
+                  label={theme.name}
+                />
+              );
+            })}
           </RadioGroup>
         </DialogContent>
         <DialogActions>
@@ -76,16 +88,16 @@ class ThemeChooserDialog extends Component {
     this.radioGroupRef.focus();
   }
 
-  handleChange(event, themeSelected) {
-    this.setState({ themeSelected });
+  handleChange(event, theme) {
+    this.setState({ themeSelected: theme });
   }
 
   handleCancel() {
-    this.props.onClose(this.props.themeSelected);
+    this.props.onClose(this.state.themeSelected);
   }
 
   handleOk() {
-    this.props.onClose(this.props.themeSelected);
+    this.props.onClose(this.state.themeSelected);
   }
 }
 

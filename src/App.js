@@ -483,7 +483,7 @@ class App extends Component {
         <Header />
         <AppDrawer />
         <Container />
-        <SettingsDialog />
+        <SettingsDialog changeTheme={this.props.setTheme} />
         <AboutDialog />
         {this.renderSnackbar()}
       </div>
