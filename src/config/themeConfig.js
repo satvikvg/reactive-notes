@@ -123,3 +123,7 @@ themes["greyOrange"] = {
 };
 
 export { themes };
+export const ThemeModes = {
+  LIGHT: "light",
+  DARK: "dark"
+};

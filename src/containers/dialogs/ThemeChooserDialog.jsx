@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import autoBind from "react-autobind";
 import PropTypes from "prop-types";
-import _ from "lodash";
 import {
   Dialog,
   DialogTitle,
@@ -89,15 +88,15 @@ class ThemeChooserDialog extends Component {
   }
 
   handleChange(event, theme) {
-    this.setState({ themeSelected: theme });
+    this.props.changeTheme(theme);
   }
 
   handleCancel() {
-    this.props.onClose(this.state.themeSelected);
+    this.props.onClose();
   }
 
   handleOk() {
-    this.props.onClose(this.state.themeSelected);
+    this.props.onSelected();
   }
 }
 

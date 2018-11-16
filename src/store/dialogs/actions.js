@@ -54,6 +54,20 @@ export function toggleSettingsDialog(settingsDialogProps) {
   };
 }
 
+export function toggleThemeChooserDialog(themeChooserDialogProps) {
+  return (dispatch, getState) => {
+    try {
+      themeChooserDialogProps.open = themeChooserDialogProps.open
+        ? false
+        : true;
+      dispatch({
+        type: types.TOGGLE_THEME_CHOOSER_DIALOG,
+        themeChooserDialogProps
+      });
+    } catch (error) {}
+  };
+}
+
 export function toggleAboutDialog(aboutDialogProps) {
   return (dispatch, getState) => {
     try {

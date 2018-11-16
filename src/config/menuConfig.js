@@ -1,27 +1,29 @@
-import * as notesActionTypes from "../store/notes/actionTypes";
+import * as notesActionTypes from "../store/data/notes/actionTypes";
 import * as dialogActionTypes from "../store/dialogs/actionTypes";
+import * as Icons from "@material-ui/icons";
+
 export const menuItems = [
   {
     name: "Notes",
-    icon: "fas fa-sticky-note",
+    icon: Icons.Notes,
     type: "MenuItem",
     action: notesActionTypes.GET_NOTES
   },
   {
     name: "Starred",
-    icon: "far fa-star",
+    icon: Icons.Star,
     type: "MenuItem",
     action: notesActionTypes.GET_STARRED_NOTES
   },
   {
     name: "Archive",
-    icon: "fas fa-archive",
+    icon: Icons.Archive,
     type: "MenuItem",
     action: notesActionTypes.GET_ARCHIVED_NOTES
   },
   {
     name: "Trash",
-    icon: "far fa-trash-alt",
+    icon: Icons.Delete,
     type: "MenuItem",
     action: notesActionTypes.GET_TRASHED_NOTES
   },
@@ -32,13 +34,13 @@ export const menuItems = [
   },
   {
     name: "Settings",
-    icon: "fas fa-cog",
+    icon: Icons.Settings,
     type: "MenuItem",
     action: dialogActionTypes.TOGGLE_SETTINGS_DIALOG
   },
   {
     name: "About",
-    icon: "fas fa-info",
+    icon: Icons.Info,
     type: "MenuItem",
     action: dialogActionTypes.TOGGLE_ABOUT_DIALOG
   }

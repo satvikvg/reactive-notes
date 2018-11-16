@@ -32,36 +32,12 @@ const defaultLightTheme = {
   }
 };
 
-// All the following keys are optional.
-// We try our best to provide a great default value.
-const defaultDarkTheme = {
-  palette: {
-    primary: blue,
-    secondary: pink,
-    error: red,
-    type: "dark",
-    // Used by `getContrastText()` to maximize the contrast between the background and
-    // the text.
-    contrastThreshold: 3,
-    // Used to shift a color's luminance by approximately
-    // two indexes within its tonal palette.
-    // E.g., shift from Red 500 to Red 300 or Red 700.
-    tonalOffset: 0.2
-  }
-};
-
 class AppContainer extends Component {
   constructor(props) {
     super(props);
     autoBind(this);
     this.state = {};
     this.theme = createMuiTheme(defaultLightTheme);
-  }
-
-  componentDidMount() {
-    setTimeout(() => {
-      this.handleSetTheme(defaultDarkTheme);
-    }, 10000);
   }
 
   render() {

@@ -9,6 +9,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
+import { Typography } from "@material-ui/core";
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
@@ -34,9 +35,30 @@ class AboutDialog extends React.Component {
         <DialogTitle id="alert-dialog-slide-title">{"About"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            Version <b>0.1-BETA</b>
-            <br />
-            Developed by <b>Satvik Gadag</b>
+            <Typography component="h6" variant="subheading">
+              Developed By <b>Satvik Gadag</b>
+            </Typography>
+            <h3>Change Log</h3>
+            <h4>Version 1.0 Beta</h4>
+            <p>Release Date: 16/11/2018</p>
+            <ul>
+              <li>Ability to Star, Archive, Trash &amp; Recover notes.</li>
+              <li>Added new Navigation Drawer.</li>
+              <li>
+                Added 'Theme Chooser' with 10 different themes to choose from.
+              </li>
+              <li>
+                Added theme mode to switch between 'Light' and 'Dark' theme
+                mode.
+              </li>
+              <li>
+                Included 'Change logs' in about section which you are reading
+                right now ;)
+              </li>
+              <li>
+                Several bugs fixes were included to improve user experience.
+              </li>
+            </ul>
           </DialogContentText>
         </DialogContent>
         <DialogActions>

@@ -8,6 +8,7 @@ import * as appActionTypes from "./store/app/actionTypes";
 import * as appActions from "./store/app/actions";
 import * as appSelector from "./store/app/reducer";
 import * as snackbarSelector from "./store/snackbars/reducer";
+import * as settingsSelector from "./store/data/settings/reducer";
 import Lottie from "react-lottie";
 import "./App.css";
 import Header from "./components/core/header/Header";
@@ -23,6 +24,8 @@ import { withStyles, Snackbar } from "@material-ui/core";
 import { loadCSS } from "fg-loadcss/src/loadCSS";
 import SettingsDialog from "./containers/dialogs/SettingsDialog";
 import AboutDialog from "./containers/dialogs/AboutDialog";
+import { themes } from "./config/themeConfig";
+import { NoteTypes, NoteStates } from "./constants/NoteConstants";
 
 const SIGN_UP_EVENT = "sign-up";
 const SIGN_IN_EVENT = "sign-in";
@@ -37,6 +40,9 @@ const styles = theme => ({
 class App extends Component {
   constructor(props) {
     super(props);
+
+    // Automatically bind all functions with "this" context.
+    autoBind(this);
 
     // This state maintains all data related to App, SignIn and SignUp.
     this.state = {
@@ -94,8 +100,8 @@ class App extends Component {
       }
     };
 
-    // Automatically bind all functions with "this" context.
-    autoBind(this);
+    this.themes = themes;
+    this.theme = props.theme;
   }
 
   /**
@@ -111,6 +117,16 @@ class App extends Component {
       "https://use.fontawesome.com/releases/v5.5.0/css/all.css",
       document.querySelector("#insertion-point-jss")
     );
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (
+      this.props.theme.themeSelected !== nextProps.theme.themeSelected ||
+      this.props.theme.mode !== nextProps.theme.mode
+    ) {
+      const palette = this.getThemePalette(nextProps.theme);
+      this.props.setTheme(palette);
+    }
   }
 
   render() {
@@ -271,27 +287,52 @@ class App extends Component {
         id: this.notesDb.push().key,
         title: "Hi " + creds.name,
         content:
-          "Here are few notes to help you understand how to use Re-Active notes.\nPlease read through...",
-        type: "TEXT"
+          "Here are few notes to help you understand how to use Re-Active notes.\nPlease read through other notes.",
+        type: NoteTypes.TEXT,
+        starred: false,
+        state: NoteStates.DEFAULT
       },
       {
         id: this.notesDb.push().key,
         title: "Hover Me.!!",
         content: "Hover any note to see action buttons.",
-        type: "TEXT"
+        type: NoteTypes.TEXT,
+        starred: false,
+        state: NoteStates.DEFAULT
       },
       {
         id: this.notesDb.push().key,
         title: "Edit",
-        content: "Edit notes by clicking on Edit action button.",
-        type: "TEXT"
+        content: "Edit notes by clicking on 'Edit' action button.",
+        type: NoteTypes.TEXT,
+        starred: false,
+        state: NoteStates.DEFAULT
       },
       {
         id: this.notesDb.push().key,
-        title: "Delete",
+        title: "Starred",
         content:
-          "You can delete notes by clicking delete action button with bin icon.",
-        type: "TEXT"
+          "You can set notes as Starred/Favourite by clicking on 'Star' icon.",
+        type: NoteTypes.TEXT,
+        starred: false,
+        state: NoteStates.DEFAULT
+      },
+      {
+        id: this.notesDb.push().key,
+        title: "Archive",
+        content: "You can set notes as Archived by clicking on 'Archive' icon.",
+        type: NoteTypes.TEXT,
+        starred: false,
+        state: NoteStates.DEFAULT
+      },
+      {
+        id: this.notesDb.push().key,
+        title: "Trash",
+        content:
+          "You can trash notes by clicking 'Trash' action button with 'bin' icon.",
+        type: NoteTypes.TEXT,
+        starred: false,
+        state: NoteStates.DEFAULT
       }
     ];
 
@@ -594,6 +635,31 @@ class App extends Component {
     signInAnimationProps.isStopped = false;
     this.setState({ signInAnimationOptions, signInAnimationProps });
   }
+
+  /**
+   * Generated theme palette to set to MuiThemeConfigurator.
+   * @param {any} theme theme configuration from settings.
+   */
+  getThemePalette(theme) {
+    let themeToApply = {};
+    themeToApply.themeSelected = this.theme.themeSelected;
+    themeToApply.mode = this.theme.mode;
+
+    if (theme.themeSelected !== undefined) {
+      themeToApply.themeSelected = theme.themeSelected;
+      this.theme.themeSelected = themeToApply.themeSelected;
+    }
+
+    if (theme.mode !== undefined) {
+      themeToApply.mode = theme.mode;
+      this.theme.mode = themeToApply.mode;
+    }
+
+    let themePalette = this.themes[themeToApply.themeSelected].palette;
+    themePalette.type = theme.mode;
+
+    return { palette: themePalette };
+  }
 }
 
 App.propTypes = {
@@ -608,6 +674,10 @@ function mapStateToProps(state) {
     },
     snackbar: {
       config: snackbarSelector.getConfiguration(state)
+    },
+    theme: {
+      themeSelected: settingsSelector.getThemeSelected(state),
+      mode: settingsSelector.getThemeMode(state)
     }
   };
 }

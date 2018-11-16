@@ -12,6 +12,9 @@ const initialState = Immutable({
     themeSelectedName: "Blue | Pink",
     themeSelected: "bluePink"
   },
+  themeChooserDialogProps: {
+    open: false
+  },
   aboutDialogProps: {
     open: false
   }
@@ -45,6 +48,9 @@ export default function reduce(state = initialState, action = {}) {
     case types.TOGGLE_SETTINGS_DIALOG:
       return state.merge(action);
 
+    case types.TOGGLE_THEME_CHOOSER_DIALOG:
+      return state.merge(action);
+
     case types.TOGGLE_ABOUT_DIALOG:
       return state.merge(action);
 
@@ -64,6 +70,10 @@ export function getNoteAssociatedToDialog(state) {
 
 export function getSettingsDialogProps(state) {
   return state.dialogs.settingsDialogProps;
+}
+
+export function getThemeChooserDialogProps(state) {
+  return state.dialogs.themeChooserDialogProps;
 }
 
 export function getAboutDialogProps(state) {

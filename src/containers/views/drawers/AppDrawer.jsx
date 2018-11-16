@@ -9,8 +9,8 @@ import {
   List,
   ListItem,
   ListItemText,
-  Icon,
-  SwipeableDrawer
+  SwipeableDrawer,
+  ListItemIcon
 } from "@material-ui/core";
 import classNames from "classnames";
 import PropTypes from "prop-types";
@@ -19,8 +19,8 @@ import * as appActions from "../../../store/app/actions";
 import * as appSelector from "../../../store/app/reducer";
 import { menuItems } from "../../../config/menuConfig";
 import NotesService from "../../../services/NotesService";
-import * as notesActionTypes from "../../../store/notes/actionTypes";
-import * as notesActions from "../../../store/notes/actions";
+import * as notesActionTypes from "../../../store/data/notes/actionTypes";
+import * as notesActions from "../../../store/data/notes/actions";
 import * as dialogActionTypes from "../../../store/dialogs/actionTypes";
 import * as dialogActions from "../../../store/dialogs/actions";
 
@@ -157,7 +157,6 @@ class AppDrawer extends Component {
 
   getMenuItems() {
     const items = [];
-    const { classes } = this.props;
     const { selectedAction } = this.state.menuItem;
 
     menuItems.forEach(item => {
@@ -170,7 +169,9 @@ class AppDrawer extends Component {
               onClick={() => this.handleMenuItemClick(item.action)}
               selected={selectedAction === item.action ? true : false}
             >
-              <Icon className={classNames(classes.icon, item.icon)} />
+              <ListItemIcon>
+                <item.icon />
+              </ListItemIcon>
               <ListItemText primary={item.name} />
             </ListItem>
           );

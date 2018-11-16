@@ -5,6 +5,8 @@ import PropTypes from "prop-types";
 import * as dialogActionTypes from "../../store/dialogs/actionTypes";
 import * as dialogActions from "../../store/dialogs/actions";
 import * as dialogSelector from "../../store/dialogs/reducer";
+import * as settingsActions from "../../store/data/settings/actions";
+import * as settingsSelector from "../../store/data/settings/reducer";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -17,8 +19,9 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
-import { themes } from "../../config/themeConfig";
+import { themes, ThemeModes } from "../../config/themeConfig";
 import ThemeChooserDialog from "./ThemeChooserDialog";
+import { Switch } from "@material-ui/core";
 
 const styles = {
   appBar: {
@@ -42,25 +45,27 @@ class SettingsDialog extends React.Component {
     super(props);
     autoBind(this);
 
-    this.state = {
-      themeChooserDialog: {
-        open: false
-      }
-    };
-
     this.themes = themes;
+    this.initialTheme = props.theme.themeSelected;
+    this.state = {
+      themeSelectedName: this.themes[this.props.theme.themeSelected].name
+    };
   }
 
   componentWillReceiveProps(nextProps) {
-    if (
-      this.props !== nextProps.themeSelectedName ||
-      this.props.themeSelected !== nextProps.themeSelected
-    ) {
+    if (this.props.theme.themeSelected !== nextProps.theme.themeSelected) {
       const state = { ...this.state };
-      state.themeSelected = nextProps.themeSelected;
-      state.themeSelectedName = nextProps.themeSelectedName;
+      let theme = this.themes[this.props.theme.themeSelected];
 
-      this.setState(state);
+      if (nextProps.theme.themeSelected !== undefined) {
+        theme = this.themes[nextProps.theme.themeSelected];
+      }
+
+      if (theme !== undefined) {
+        state.themeSelectedName = theme.name;
+
+        this.setState(state);
+      }
     }
   }
 
@@ -117,15 +122,32 @@ class SettingsDialog extends React.Component {
                 secondary={this.state.themeSelectedName}
               />
             </ListItem>
+            <ListItem button divider onClick={this.handleToggleThemeMode}>
+              <ListItemText
+                primary="Theme Mode"
+                secondary={
+                  this.props.theme.mode === ThemeModes.LIGHT ? "Light" : "Dark"
+                }
+              />
+              <Switch
+                checked={
+                  this.props.theme.mode === ThemeModes.LIGHT ? false : true
+                }
+                onChange={this.handleToggleThemeMode}
+                value={this.props.theme.mode}
+              />
+            </ListItem>
           </List>
         </Dialog>
         <ThemeChooserDialog
           classes={{
             paper: classes.paper
           }}
-          open={this.state.themeChooserDialog.open}
+          open={this.props.themeChooserDialogProps.open}
           onClose={this.handleThemeChooserClose}
-          themeSelected={this.state.themeSelected}
+          onSelected={this.handleThemeChooserOk}
+          themeSelected={this.props.theme.themeSelected}
+          changeTheme={this.handleChangeTheme}
         />
       </Fragment>
     );
@@ -134,7 +156,9 @@ class SettingsDialog extends React.Component {
   handleClickListItem(action) {
     switch (action) {
       case dialogActionTypes.TOGGLE_THEME_CHOOSER_DIALOG:
-        this.setState({ themeChooserDialog: { open: true } });
+        this.props.dispatch(
+          dialogActions.toggleThemeChooserDialog({ open: false })
+        );
         break;
 
       default:
@@ -142,17 +166,25 @@ class SettingsDialog extends React.Component {
     }
   }
 
-  handleThemeChooserClose(themeSelected) {
-    const palette = this.themes[themeSelected].palette;
-    this.props.changeTheme({ palette: palette });
+  handleThemeChooserOk() {
+    this.props.dispatch(dialogActions.toggleThemeChooserDialog({ open: true }));
+  }
 
-    this.setState({
-      themeSelected: themeSelected,
-      themeSelectedName: this.themes[themeSelected].name,
-      themeChooserDialog: {
-        open: false
-      }
-    });
+  handleThemeChooserClose() {
+    this.props.dispatch(dialogActions.toggleThemeChooserDialog({ open: true }));
+    this.props.dispatch(settingsActions.setTheme(this.initialTheme));
+  }
+
+  handleChangeTheme(themeSelected) {
+    this.props.dispatch(settingsActions.setTheme(themeSelected));
+  }
+
+  handleToggleThemeMode() {
+    const mode =
+      this.props.theme.mode === ThemeModes.LIGHT
+        ? ThemeModes.DARK
+        : ThemeModes.LIGHT;
+    this.props.dispatch(settingsActions.setThemeMode(mode));
   }
 }
 
@@ -163,7 +195,12 @@ SettingsDialog.propTypes = {
 // which props do we want to inject, given the global store state?
 function mapStateToProps(state) {
   return {
-    settingsDialogProps: dialogSelector.getSettingsDialogProps(state)
+    settingsDialogProps: dialogSelector.getSettingsDialogProps(state),
+    themeChooserDialogProps: dialogSelector.getThemeChooserDialogProps(state),
+    theme: {
+      themeSelected: settingsSelector.getThemeSelected(state),
+      mode: settingsSelector.getThemeMode(state)
+    }
   };
 }
 
